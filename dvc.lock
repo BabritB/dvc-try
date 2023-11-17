@@ -1,0 +1,80 @@
+schema: '2.0'
+stages:
+  load_data:
+    cmd: python3 src/load_data.py --config=params.yaml
+    deps:
+    - path: data_given/SAHeart.csv
+      hash: md5
+      md5: 70d1a15874bfbc09cf21067098e9e47c
+      size: 25105
+    - path: src/get_data.py
+      hash: md5
+      md5: af5efbbc42a30338e9d41a0e96814418
+      size: 748
+    - path: src/load_data.py
+      hash: md5
+      md5: 4c538725ca53784724a28f60032b8502
+      size: 667
+    outs:
+    - path: data/raw/SAHeart.csv
+      hash: md5
+      md5: ca50ce2fd9436b2324fbdd1e19333870
+      size: 20213
+  split_data:
+    cmd: python3 src/split_data.py --config=params.yaml
+    deps:
+    - path: data/raw/SAHeart.csv
+      hash: md5
+      md5: ca50ce2fd9436b2324fbdd1e19333870
+      size: 20213
+    - path: src/split_data.py
+      hash: md5
+      md5: 454dbe2fb4d7f95a22e547cbed90957e
+      size: 1072
+    outs:
+    - path: data/processed/test_SAHeart.csv
+      hash: md5
+      md5: 1ec0c0e99e0e71a499a2186c8335046c
+      size: 7139
+    - path: data/processed/train_SAHeart.csv
+      hash: md5
+      md5: 7c330412457a0c976d40142d77e1a657
+      size: 13152
+  train_and_evaluate:
+    cmd:
+    - python3 src/train_and_evaluate.py --config=params.yaml
+    - dvc plots show
+    deps:
+    - path: data/processed/test_SAHeart.csv
+      hash: md5
+      md5: 1ec0c0e99e0e71a499a2186c8335046c
+      size: 7139
+    - path: data/processed/train_SAHeart.csv
+      hash: md5
+      md5: 7c330412457a0c976d40142d77e1a657
+      size: 13152
+    - path: src/train_and_evaluate.py
+      hash: md5
+      md5: 356988015c4fe46bac770dfd65a617fc
+      size: 6061
+    outs:
+    - path: cm.csv
+      hash: md5
+      md5: 5c50b42e20e67a3ded65ddbb21b61bc8
+      size: 662
+    - path: report/prc.json
+      hash: md5
+      md5: 03e43147abcca186aebc5685da660d66
+      size: 278
+    - path: report/roc.json
+      hash: md5
+      md5: e38c9eaa4eda197a8bf55df6f84ef494
+      size: 341
+    - path: report/scores.json
+      hash: md5
+      md5: 91e6d9d8aee88a60405793176479b02d
+      size: 144
+    - path: saved_models/model.joblib
+      hash: md5
+      md5: 9dcb36bb544be0b2438726763994b8c9
+      size: 1359
